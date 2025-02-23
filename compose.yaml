@@ -1,0 +1,5 @@
+service:
+    web_server:
+      build: .
+      ports:
+        - "8000.5000"
