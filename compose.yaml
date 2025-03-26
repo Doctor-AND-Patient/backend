@@ -1,5 +1,37 @@
-service:
-    web_server:
-      build: .
-      ports:
-        - "8000.5000"
+services:
+  web_server:
+    build: .
+    ports:
+      - "8000:5000"
+    restart:
+        always
+    depends_on:
+      - db
+
+  nginx_server:
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    ports:
+      - "7000:80"
+    depends_on:
+      - web_server
+
+  db:
+    build:
+      context: ./db
+      dockerfile: Dockerfile.db
+    environment:
+      POSTGRES_USER: "${DB_USER}"
+      POSTGRES_PASSWORD: "${DB_PASSWORD}"
+      POSTGRES_DB: "${DB_NAME}"
+      PGDATA: "/var/lib/postgresql/data/pgdata"
+    ports:
+      - "5432:5432"
+    restart:
+      always
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+volumes:
+  db_data:
